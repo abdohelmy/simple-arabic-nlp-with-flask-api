@@ -14,7 +14,7 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
 import re
-import pickle
+from nltk.stem import ISRIStemmer
 class Model:
     """docstring for Moddel"""
     def __init__(self):
@@ -41,7 +41,7 @@ class Model:
         return " ".join(self.clean_words)
 		
     def stemming(self,text):
-        self.ps = PorterStemmer()
+        self.ps = ISRIStemmer()
         text = text.split()
         self.stemmed_words = []
         for word in text :
@@ -67,7 +67,7 @@ class Model:
 
     def train_test(self,test_size):
         self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(self.x, self.y, test_size = test_size, random_state = 0)
-    
+
     def train(self,classy):
         self.read_df("ASTD.csv")
         self.preprocessing()
@@ -83,7 +83,6 @@ class Model:
         if(classy=="KNN"):
           self.classifier = KNeighborsClassifier()
           self.classifier.fit(self.x_train, self.y_train)
-        self.save_model() 
         self.y_pred=self.classifier.predict(self.x_test)
         return classification_report(self.y_test, self.y_pred)
     def evaluate(self):
@@ -94,7 +93,3 @@ class Model:
         #test = self.sc.transform([test])
         return self.classifier.predict(test)
         
-    def save_model(self):
-        save = open("classifier.pickle","wb")
-        pickle.dump(self.classifier,save)
-        save.close()
